@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
-import About from "../views/About.vue";
+//import About from "../views/About.vue";
 import Stats from "../views/Stats.vue";
 import Clicker from "../views/Clicker.vue";
 
@@ -23,16 +23,16 @@ const routes: Array<RouteConfig> = [
     name: "Stats",
     component: Stats
   },
-  {
-    path: "/about",
-    name: "About",
-    component: About
-  }
+  // {
+  //   path: "/about",
+  //   name: "About",
+  //   component: About
+  // }
 ];
 
 const router = new VueRouter({
   mode: "history",
-  base: process.env.BASE_URL,
+  base: "/fcl",
   routes
 });
 

@@ -3,9 +3,9 @@
     <h3>Metrics</h3>
 
     <svg
-      v-for="item in game.sets"
-      :id="'goals-' + item.id"
-      v-bind:key="item.id"
+      v-for="set in game.sets"
+      :id="'goals-' + set.id"
+      v-bind:key="set.id"
     ></svg>
     <md-table md-card>
       <md-table-row>

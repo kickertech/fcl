@@ -47,11 +47,12 @@ export class Set {
     };
     let left = 0;
     let right = 0;
-    if (this.events.length == 0) {
+    const start = this.startTime();
+
+    if (this.events.length == 0 || !start) {
       return out;
     }
 
-    const start = this.startTime();
     out.left.push({ value: 0, timestamp: start });
     out.right.push({ value: 0, timestamp: start });
 

@@ -20,27 +20,24 @@
                 <div class="table-section dummy"></div>
                 <div class="table-section shot-at-goal right">
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
+                    class="md-raised md-accent"
                     @click="pushEvent(GAME_EVENTS.R_SHOT_AT_GOAL())"
                     >Shot At Goal</md-button
                   >
                 </div>
                 <div class="table-section goal right">
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
+                    class="md-raised md-accent"
                     @click="pushEvent(GAME_EVENTS.R_GOAL())"
                     >Goal</md-button
                   >
                 </div>
                 <div class="table-section defense left">
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
+                    class="md-raised md-primary"
                     @click="pushEvent(GAME_EVENTS.L_DEFENSE())"
                     >Defense</md-button
                   >
@@ -50,9 +47,8 @@
                   @click="pushEvent(GAME_EVENTS.R_OFFENSE())"
                 >
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
+                    class="md-raised md-accent"
                     >Offense</md-button
                   >
                 </div>
@@ -61,10 +57,9 @@
                   @click="pushEvent(GAME_EVENTS.L_MIDDLE())"
                 >
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
-                    >Middle</md-button
+                    class="md-raised md-primary"
+                    >Mid</md-button
                   >
                 </div>
                 <div
@@ -72,10 +67,9 @@
                   @click="pushEvent(GAME_EVENTS.R_MIDDLE())"
                 >
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
-                    >Middle</md-button
+                    class="md-raised md-accent"
+                    >Mid</md-button
                   >
                 </div>
                 <div
@@ -83,9 +77,8 @@
                   @click="pushEvent(GAME_EVENTS.L_OFFENSE())"
                 >
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
+                    class="md-raised md-primary"
                     >Offense</md-button
                   >
                 </div>
@@ -94,9 +87,8 @@
                   @click="pushEvent(GAME_EVENTS.R_DEFENSE())"
                 >
                   <md-button
-                    :md-ripple="false"
                     v-bind:disabled="disabled"
-                    class="md-raised"
+                    class="md-raised md-accent"
                     >Defense</md-button
                   >
                 </div>
@@ -107,16 +99,14 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    :md-ripple="false"
-                    class="md-raised"
+                    class="md-raised md-primary"
                     >Goal</md-button
                   >
                 </div>
                 <div class="table-section shot-at-goal left">
                   <md-button
                     v-bind:disabled="disabled"
-                    :md-ripple="false"
-                    class="md-raised"
+                    class="md-raised md-primary"
                     @click="pushEvent(GAME_EVENTS.L_SHOT_AT_GOAL())"
                     >Shot At Goal</md-button
                   >
@@ -129,8 +119,7 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    :md-ripple="false"
-                    class="md-raised"
+                    class="md-raised md-primary"
                     >Timout</md-button
                   >
                 </div>
@@ -138,10 +127,7 @@
                   class="table-section lost"
                   @click="pushEvent(GAME_EVENTS.N_BALL_LOST())"
                 >
-                  <md-button
-                    class="md-raised"
-                    v-bind:disabled="disabled"
-                    :md-ripple="false"
+                  <md-button class="md-raised" v-bind:disabled="disabled"
                     >Ball Lost</md-button
                   >
                 </div>
@@ -151,8 +137,7 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    :md-ripple="false"
-                    class="md-raised"
+                    class="md-raised md-accent"
                     >Timeout</md-button
                   >
                 </div>
@@ -202,13 +187,7 @@
             </div>
 
             <ul class="event-log" v-if="showEventLog">
-              <li
-                v-for="(event, index) in game
-                  .getCurrentSet()
-                  .events.slice()
-                  .reverse()"
-                v-bind:key="index"
-              >
+              <li v-for="event in logs()" v-bind:key="event.timestamp">
                 {{ event.toString() }}
               </li>
             </ul>
@@ -317,24 +296,6 @@
   &.lost {
     width: 33.33%;
   }
-  &.right .md-button.md-raised {
-    background: hsl(0, 80%, 80%) !important;
-    &:not([disabled]) {
-      color: #fff;
-    }
-    &.disabled {
-      background: hsl(0, 30%, 80%) !important;
-    }
-  }
-  &.left .md-button.md-raised {
-    background: hsl(220, 80%, 70%) !important;
-    &:not([disabled]) {
-      color: #fff;
-    }
-    &.disabled {
-      background: hsl(220, 30%, 80%) !important;
-    }
-  }
 }
 
 .game-controls {
@@ -381,22 +342,32 @@ export default {
       showSnackbar: false,
       snackbarMsg: "",
       showEventLog: true,
-      game: new Game(undefined, "", ""),
+      game: new Game(undefined, "left team", "right team"),
       GAME_EVENTS: GameEvent.EVENTS
     };
   },
   methods: {
+    logs() {
+      return this.game
+        .getCurrentSet()
+        .events.slice()
+        .reverse();
+    },
     pushEvent(evt) {
-      window.navigator.vibrate(10);
+      if (this.disabled) {
+        return;
+      }
+      window.navigator.vibrate(50);
       this.game.pushEvent(evt);
+      this.$forceUpdate();
     },
     startGame() {
-      this.pushEvent(GameEvent.EVENTS.START());
       this.disabled = false;
+      this.pushEvent(GameEvent.EVENTS.START());
     },
     endGame() {
-      this.disabled = true;
       this.pushEvent(GameEvent.EVENTS.END());
+      this.disabled = true;
     },
 
     save: function() {

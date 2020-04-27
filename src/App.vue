@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <md-app>
+    <md-app md-mode="fixed">
       <md-app-toolbar>
         <md-button class="md-icon-button" @click="showNavigation = true">
           <md-icon>menu</md-icon>
@@ -14,10 +14,10 @@
         </md-toolbar>
 
         <md-list>
-          <md-list-item to="/" @click="showNavigation = false">
+          <!-- <md-list-item to="/" @click="showNavigation = false">
             <md-icon>move_to_inbox</md-icon>
             <span class="md-list-item-text">Home</span>
-          </md-list-item>
+          </md-list-item> -->
 
           <md-list-item to="/clicker" @click="showNavigation = false">
             <md-icon>track_changes</md-icon>
@@ -26,7 +26,7 @@
 
           <md-list-item md-expand>
             <md-icon>timeline</md-icon>
-            <span class="md-list-item-text">Games</span>
+            <span class="md-list-item-text">Recent Games</span>
 
             <md-list slot="md-expand">
               <md-list-item
@@ -42,10 +42,10 @@
             </md-list>
           </md-list-item>
 
-          <md-list-item to="/about">
+          <!-- <md-list-item to="/about">
             <md-icon>send</md-icon>
             <span class="md-list-item-text">About</span>
-          </md-list-item>
+          </md-list-item> -->
           <md-list-item @click="deleteStorage()">
             <md-icon>delete_sweep</md-icon>
             <span class="md-list-item-text">Delete Local Storage</span>
@@ -80,10 +80,6 @@
   left: 0;
   height: 100%;
   width: 100%;
-}
-
-.md-app {
-  height: 100%;
 }
 
 .md-app-drawer {
