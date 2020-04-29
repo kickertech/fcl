@@ -17,9 +17,24 @@
     </md-card-header>
     <md-card-content>
       <game-metrics :game="game" />
+      <div class="game-json" v-if="showJSON">
+        <md-field>
+          <label>Export JSON</label>
+          <md-textarea
+            v-model="gameJSON"
+            ref="exportjson"
+            readonly
+          ></md-textarea>
+        </md-field>
+      </div>
     </md-card-content>
-    <div class="actions-row"></div>
     <md-card-actions>
+      <md-button
+        @click="exportGame()"
+        class="md-icon-button md-raised md-primary"
+      >
+        <md-icon>import_export</md-icon>
+      </md-button>
       <md-button
         @click="deleteGame()"
         class="md-icon-button md-raised md-accent"
@@ -38,6 +53,14 @@
 </template>
 
 <style lang="scss">
+.game-json {
+  margin: 16px 0;
+  .md-field.md-has-value .md-textarea {
+    height: 300px;
+    font-size: 12px;
+  }
+}
+
 .actions-row {
   padding: 16px;
 }
@@ -55,10 +78,17 @@ export default {
   data: function() {
     return {
       showSnackbar: false,
-      snackbarMsg: ""
+      snackbarMsg: "",
+      showJSON: false
     };
   },
   methods: {
+    exportGame() {
+      this.showJSON = true;
+      this.$nextTick(function() {
+        this.$refs.exportjson.$el.select();
+      });
+    },
     deleteGame() {
       this.$store
         .dispatch("deleteGame", this.game)
@@ -74,6 +104,9 @@ export default {
   computed: mapState({
     game: function(state) {
       return state.games.find(g => g.id == this.$route.params.id);
+    },
+    gameJSON: function() {
+      return JSON.stringify(this.game, 0, 2);
     }
   })
 };
