@@ -1,12 +1,7 @@
 <template>
-  <md-card>
-    <md-tabs>
-      <template slot="md-tab" slot-scope="{ tab }">
-        {{ tab.label }}
-        <i class="badge" v-if="tab.data.badge">{{ tab.data.badge }}</i>
-      </template>
-
-      <md-tab id="tab-home" md-label="Clicker">
+  <div class="wrapper">
+    <md-card>
+      <md-card-content>
         <div class="two-col-wrapper">
           <div class="main-area">
             <div class="clicker">
@@ -15,21 +10,29 @@
                   {{ set.results }}
                 </div>
               </div>
-
               <div class="clicker-area">
                 <div class="table-section dummy"></div>
                 <div class="table-section shot-at-goal right">
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-accent"
-                    @click="pushEvent(GAME_EVENTS.R_SHOT_AT_GOAL())"
+                    class=""
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-accent': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_R_AT_GOAL)
+                    }"
+                    @click="pushEvent(GAME_EVENTS.R_AT_GOAL())"
                     >Shot At Goal</md-button
                   >
                 </div>
                 <div class="table-section goal right">
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-accent"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-accent': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_R_GOAL)
+                    }"
                     @click="pushEvent(GAME_EVENTS.R_GOAL())"
                     >Goal</md-button
                   >
@@ -37,7 +40,11 @@
                 <div class="table-section defense left">
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-primary"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-primary': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_L_DEFENSE)
+                    }"
                     @click="pushEvent(GAME_EVENTS.L_DEFENSE())"
                     >Defense</md-button
                   >
@@ -48,27 +55,39 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-accent"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-accent': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_R_OFFENSE)
+                    }"
                     >Offense</md-button
                   >
                 </div>
                 <div
-                  class="table-section middle left"
-                  @click="pushEvent(GAME_EVENTS.L_MIDDLE())"
+                  class="table-section mid left"
+                  @click="pushEvent(GAME_EVENTS.L_MID())"
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-primary"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-primary': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_L_MID)
+                    }"
                     >Mid</md-button
                   >
                 </div>
                 <div
-                  class="table-section middle right"
-                  @click="pushEvent(GAME_EVENTS.R_MIDDLE())"
+                  class="table-section mid right"
+                  @click="pushEvent(GAME_EVENTS.R_MID())"
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-accent"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-accent': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_R_MID)
+                    }"
                     >Mid</md-button
                   >
                 </div>
@@ -78,7 +97,11 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-primary"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-primary': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_L_OFFENSE)
+                    }"
                     >Offense</md-button
                   >
                 </div>
@@ -88,7 +111,11 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-accent"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-accent': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_R_DEFENSE)
+                    }"
                     >Defense</md-button
                   >
                 </div>
@@ -99,15 +126,23 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-primary"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-primary': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_L_GOAL)
+                    }"
                     >Goal</md-button
                   >
                 </div>
                 <div class="table-section shot-at-goal left">
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-primary"
-                    @click="pushEvent(GAME_EVENTS.L_SHOT_AT_GOAL())"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-primary': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_L_AT_GOAL)
+                    }"
+                    @click="pushEvent(GAME_EVENTS.L_AT_GOAL())"
                     >Shot At Goal</md-button
                   >
                 </div>
@@ -119,7 +154,11 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-primary"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-primary': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_L_TIMEOUT)
+                    }"
                     >Timout</md-button
                   >
                 </div>
@@ -127,7 +166,12 @@
                   class="table-section lost"
                   @click="pushEvent(GAME_EVENTS.N_BALL_LOST())"
                 >
-                  <md-button class="md-raised" v-bind:disabled="disabled"
+                  <md-button
+                    v-bind:class="{
+                      'md-raised': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_N_BALL_LOST)
+                    }"
+                    v-bind:disabled="disabled"
                     >Ball Lost</md-button
                   >
                 </div>
@@ -137,7 +181,11 @@
                 >
                   <md-button
                     v-bind:disabled="disabled"
-                    class="md-raised md-accent"
+                    v-bind:class="{
+                      'md-raised': true,
+                      'md-accent': true,
+                      'last-event': isLastEvent(GameEvent.TYPE_R_TIMEOUT)
+                    }"
                     >Timeout</md-button
                   >
                 </div>
@@ -163,6 +211,16 @@
                 >
               </div>
             </div>
+            <md-card-actions md-alignment="left">
+              <md-button disabled
+                >Score: {{ game.getCurrentSet().score()[0] }} :
+                {{ game.getCurrentSet().score()[1] }}</md-button
+              >
+              <md-button disabled>Timer: {{ timer }}</md-button>
+              <md-button class="md-button md-raised" @click="undo()"
+                >undo</md-button
+              >
+            </md-card-actions>
           </div>
           <div class="sidebar">
             <div class="form-wrapper">
@@ -193,20 +251,26 @@
             </ul>
           </div>
         </div>
-      </md-tab>
-      <md-tab id="tab-metrics" md-label="Metrics">
+      </md-card-content>
+    </md-card>
+    <md-card class="metrics-card">
+      <md-card-header>
+        <md-card-header-text>Statistics </md-card-header-text>
+      </md-card-header>
+      <md-card-content>
         <game-metrics :game="game" />
-      </md-tab>
-      <md-snackbar
-        md-position="center"
-        :md-active.sync="showSnackbar"
-        md-persistent
-      >
-        <span>{{ snackbarMsg }}</span>
-      </md-snackbar>
-    </md-tabs>
-  </md-card>
+        <md-snackbar
+          md-position="center"
+          :md-active.sync="showSnackbar"
+          md-persistent
+        >
+          <span>{{ snackbarMsg }}</span>
+        </md-snackbar>
+      </md-card-content>
+    </md-card>
+  </div>
 </template>
+
 <style lang="scss">
 .md-card {
   max-width: 1100px;
@@ -214,6 +278,10 @@
 }
 .md-tab {
   background: #fff;
+}
+
+.metrics-card {
+  margin-top: 32px !important;
 }
 
 .two-col-wrapper {
@@ -233,6 +301,12 @@
   .sidebar {
     padding: 0 8px 0 8px;
     flex-grow: 1; // use remaining space
+
+    @media screen and (max-width: 980px) {
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+      margin-top: 16px;
+      padding-top: 16px;
+    }
 
     .md-checkbox {
     }
@@ -262,33 +336,36 @@
 
   .md-button {
     width: 100%;
+    &.last-event {
+      background: #2d132c !important;
+    }
   }
   &.dummy {
-    width: 40%;
+    width: 50%;
     @media screen and (max-width: 980px) {
       display: none;
     }
   }
   &.goal {
-    width: 30%;
+    width: 25%;
     @media screen and (max-width: 980px) {
       width: 50%;
     }
   }
   &.shot-at-goal {
-    width: 30%;
+    width: 25%;
     @media screen and (max-width: 980px) {
       width: 50%;
     }
   }
-  &.middle {
+  &.mid {
     width: 50%;
   }
   &.offense {
-    width: 60%;
+    width: 50%;
   }
   &.defense {
-    width: 40%;
+    width: 50%;
   }
   &.timeout {
     width: 33.33%;
@@ -318,7 +395,7 @@
 .event-log {
   max-width: 600px;
   margin: 0 auto;
-  height: 300px;
+  height: 247px;
   overflow: auto;
   border: 1px solid #ccc;
   padding: 1em 2em;
@@ -326,8 +403,8 @@
 </style>
 
 <script>
-import Game from "@/lib/Game";
-import * as GameEvent from "@/lib/GameEvents";
+import Game from "../lib/Game";
+import * as GameEvent from "../lib/GameEvents";
 import GameMetrics from "../components/GameMetrics.vue";
 
 export default {
@@ -337,27 +414,63 @@ export default {
   },
   data: function() {
     return {
+      timer: 0,
       sending: false,
       disabled: true,
       showSnackbar: false,
       snackbarMsg: "",
       showEventLog: true,
       game: new Game(undefined, "left team", "right team"),
-      GAME_EVENTS: GameEvent.EVENTS
+      GAME_EVENTS: GameEvent.EVENTS,
+      GameEvent: GameEvent
     };
   },
+  mounted: function() {
+    this.startInterval();
+  },
   methods: {
+    isLastEvent(type) {
+      const evt = this.game.getCurrentSet().lastEvent();
+      if (evt && evt.type == type) {
+        return true;
+      }
+    },
     logs() {
       return this.game
         .getCurrentSet()
         .events.slice()
         .reverse();
     },
+    startInterval() {
+      this.timerInterval = setInterval(() => {
+        if (!this.disabled) {
+          this.timer++;
+        }
+      }, 1000);
+    },
+    undo() {
+      const evt = this.game.undo();
+      if (!evt) {
+        return;
+      }
+
+      switch (evt.type) {
+        case GameEvent.TYPE_START:
+          this.disabled = true;
+          break;
+        case GameEvent.TYPE_END:
+          this.disabled = false;
+          break;
+      }
+    },
     pushEvent(evt) {
       if (this.disabled) {
         return;
       }
-      window.navigator.vibrate(50);
+      window.navigator.vibrate(33);
+      this.timer = 0;
+      clearInterval(this.timerInterval);
+      this.startInterval();
       this.game.pushEvent(evt);
       this.$forceUpdate();
     },

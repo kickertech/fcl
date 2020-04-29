@@ -6,7 +6,20 @@ import GameEvent, {
   TYPE_R_GOAL
 } from "./GameEvents";
 import { v4 as uuidv4 } from "uuid";
-import { GoalStatistics, GoalStat } from "./Game";
+import { mapBarStats } from "./Statistics";
+
+export type GoalStat = {
+  // the number of goals at a given timestamp
+  value: number;
+  timestamp: number;
+};
+
+// GoalStatistics is an aggregated view of game events
+// to make plotting easier
+export type GoalStatistics = {
+  left: GoalStat[];
+  right: GoalStat[];
+};
 
 export class Set {
   id = "";
@@ -28,6 +41,15 @@ export class Set {
     return end.timestamp;
   }
 
+  score(): number[] {
+    const lgoals = this.events.filter(getType(TYPE_L_GOAL)).length;
+    const rgoals = this.events.filter(getType(TYPE_R_GOAL)).length;
+    if (!lgoals && !rgoals) {
+      return [0, 0];
+    }
+    return [lgoals, rgoals];
+  }
+
   finished() {
     const evt = this.events[this.events.length - 1];
     if (evt && evt.type == TYPE_END) {
@@ -36,8 +58,26 @@ export class Set {
     return false;
   }
 
+  undo(): GameEvent | undefined {
+    return this.events.pop();
+  }
+
   pushEvent(evt: GameEvent) {
     this.events.push(evt);
+  }
+
+  lastEvent(): GameEvent | undefined {
+    if (this.events.length == 0) {
+      return undefined;
+    }
+    return this.events[this.events.length - 1];
+  }
+
+  getStatistics() {
+    return {
+      left: mapBarStats("L", this.events),
+      right: mapBarStats("R", this.events)
+    };
   }
 
   goalStatistics(): GoalStatistics {

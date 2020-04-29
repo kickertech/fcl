@@ -1,41 +1,19 @@
 import GameEvent, {
   getType,
-  hasPrev,
   TYPE_L_GOAL,
   TYPE_R_GOAL,
   TYPE_START,
-  TYPE_END,
-  TYPE_L_SHOT_AT_GOAL,
-  TYPE_L_OFFENSE,
-  TYPE_L_DEFENSE,
-  TYPE_L_MIDDLE,
-  TYPE_R_SHOT_AT_GOAL,
-  TYPE_R_OFFENSE,
-  TYPE_R_DEFENSE,
-  TYPE_R_MIDDLE
+  TYPE_END
 } from "./GameEvents";
 
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
-import { GameStatistics } from "./Statistics";
+import { getStatistics } from "./Statistics";
 import { Set } from "./Set";
 
 export type GameResult = {
   leftGoals: number;
   rightGoals: number;
-};
-
-export type GoalStat = {
-  // the number of goals at a given timestamp
-  value: number;
-  timestamp: number;
-};
-
-// GoalStatistics is an aggregated view of game events
-// to make plotting easier
-export type GoalStatistics = {
-  left: GoalStat[];
-  right: GoalStat[];
 };
 
 export type GAME_STATE = number;
@@ -63,6 +41,10 @@ export default class Game {
     this.rightTeam = rightTeam;
     this.sets = sets;
     this.state = state;
+  }
+
+  undo(): GameEvent | undefined {
+    return this.sets[this.setIdx].undo();
   }
 
   pushEvent(evt: GameEvent) {
@@ -96,162 +78,15 @@ export default class Game {
   }
 
   getStatistics() {
-    const out = {
-      total: {} as GameStatistics,
-      sets: [] as GameStatistics[]
-    };
-
-    this.sets.forEach(set => {
-      out.sets.push({
-        left: {
-          goals: {
-            sum: set.events.filter(getType(TYPE_L_GOAL)).length,
-            fromMiddle: hasPrev(set.events, [TYPE_L_GOAL], [TYPE_L_MIDDLE])
-              .length,
-            fromOffense: hasPrev(set.events, [TYPE_L_GOAL], [TYPE_L_OFFENSE])
-              .length,
-            fromDefense: hasPrev(set.events, [TYPE_L_GOAL], [TYPE_L_DEFENSE])
-              .length
-          },
-          atGoal: {
-            sum: set.events.filter(getType(TYPE_L_SHOT_AT_GOAL)).length,
-            fromMiddle: hasPrev(
-              set.events,
-              [TYPE_L_SHOT_AT_GOAL],
-              [TYPE_L_MIDDLE]
-            ).length,
-            fromOffense: hasPrev(
-              set.events,
-              [TYPE_L_SHOT_AT_GOAL],
-              [TYPE_L_OFFENSE]
-            ).length,
-            fromDefense: hasPrev(
-              set.events,
-              [TYPE_L_SHOT_AT_GOAL],
-              [TYPE_L_DEFENSE]
-            ).length
-          },
-          pass: hasPrev(
-            set.events,
-            [TYPE_L_OFFENSE],
-            [TYPE_L_DEFENSE, TYPE_L_MIDDLE]
-          ).length,
-          defensiveOdds: 0.0,
-          offensiveOdds: 0.0
-        },
-        right: {
-          goals: {
-            sum: set.events.filter(getType(TYPE_R_GOAL)).length,
-            fromMiddle: hasPrev(set.events, [TYPE_R_GOAL], [TYPE_R_MIDDLE])
-              .length,
-            fromOffense: hasPrev(set.events, [TYPE_R_GOAL], [TYPE_R_OFFENSE])
-              .length,
-            fromDefense: hasPrev(set.events, [TYPE_R_GOAL], [TYPE_R_DEFENSE])
-              .length
-          },
-          atGoal: {
-            sum: set.events.filter(getType(TYPE_R_SHOT_AT_GOAL)).length,
-            fromMiddle: hasPrev(
-              set.events,
-              [TYPE_R_SHOT_AT_GOAL],
-              [TYPE_R_MIDDLE]
-            ).length,
-            fromOffense: hasPrev(
-              set.events,
-              [TYPE_R_SHOT_AT_GOAL],
-              [TYPE_R_OFFENSE]
-            ).length,
-            fromDefense: hasPrev(
-              set.events,
-              [TYPE_R_SHOT_AT_GOAL],
-              [TYPE_R_DEFENSE]
-            ).length
-          },
-          pass: hasPrev(
-            set.events,
-            [TYPE_R_OFFENSE],
-            [TYPE_R_DEFENSE, TYPE_R_MIDDLE]
-          ).length,
-          defensiveOdds: 0.0,
-          offensiveOdds: 0.0
-        }
-      });
-    });
-
     const allEvents = _.flatten(
       Object.keys(this.sets).map((i, n) => {
         return this.sets[n].events;
       })
     );
-
-    out.total = {
-      left: {
-        goals: {
-          sum: allEvents.filter(getType(TYPE_L_GOAL)).length,
-          fromMiddle: hasPrev(allEvents, [TYPE_L_GOAL], [TYPE_L_MIDDLE]).length,
-          fromOffense: hasPrev(allEvents, [TYPE_L_GOAL], [TYPE_L_OFFENSE])
-            .length,
-          fromDefense: hasPrev(allEvents, [TYPE_L_GOAL], [TYPE_L_DEFENSE])
-            .length
-        },
-        atGoal: {
-          sum: allEvents.filter(getType(TYPE_L_SHOT_AT_GOAL)).length,
-          fromMiddle: hasPrev(allEvents, [TYPE_L_SHOT_AT_GOAL], [TYPE_L_MIDDLE])
-            .length,
-          fromOffense: hasPrev(
-            allEvents,
-            [TYPE_L_SHOT_AT_GOAL],
-            [TYPE_L_OFFENSE]
-          ).length,
-          fromDefense: hasPrev(
-            allEvents,
-            [TYPE_L_SHOT_AT_GOAL],
-            [TYPE_L_DEFENSE]
-          ).length
-        },
-        pass: hasPrev(
-          allEvents,
-          [TYPE_L_OFFENSE],
-          [TYPE_L_DEFENSE, TYPE_L_MIDDLE]
-        ).length,
-        defensiveOdds: 0.0,
-        offensiveOdds: 0.0
-      },
-      right: {
-        goals: {
-          sum: allEvents.filter(getType(TYPE_R_GOAL)).length,
-          fromMiddle: hasPrev(allEvents, [TYPE_R_GOAL], [TYPE_R_MIDDLE]).length,
-          fromOffense: hasPrev(allEvents, [TYPE_R_GOAL], [TYPE_R_OFFENSE])
-            .length,
-          fromDefense: hasPrev(allEvents, [TYPE_R_GOAL], [TYPE_R_DEFENSE])
-            .length
-        },
-        atGoal: {
-          sum: allEvents.filter(getType(TYPE_R_SHOT_AT_GOAL)).length,
-          fromMiddle: hasPrev(allEvents, [TYPE_R_SHOT_AT_GOAL], [TYPE_R_MIDDLE])
-            .length,
-          fromOffense: hasPrev(
-            allEvents,
-            [TYPE_R_SHOT_AT_GOAL],
-            [TYPE_R_OFFENSE]
-          ).length,
-          fromDefense: hasPrev(
-            allEvents,
-            [TYPE_R_SHOT_AT_GOAL],
-            [TYPE_R_DEFENSE]
-          ).length
-        },
-        pass: hasPrev(
-          allEvents,
-          [TYPE_R_OFFENSE],
-          [TYPE_R_DEFENSE, TYPE_R_MIDDLE]
-        ).length,
-        defensiveOdds: 0.0,
-        offensiveOdds: 0.0
-      }
+    return {
+      total: getStatistics(allEvents),
+      sets: this.sets.map(set => getStatistics(set.events))
     };
-
-    return out;
   }
 
   result(): GameResult {
@@ -262,6 +97,9 @@ export default class Game {
   }
 
   static fromJSON(obj: any): Game {
+    if (!obj.sets || !obj.id || !obj.leftTeam || !obj.rightTeam) {
+      throw new TypeError(`invalid game json: ${JSON.stringify(obj)}`);
+    }
     return new Game(
       obj.id,
       obj.leftTeam,
