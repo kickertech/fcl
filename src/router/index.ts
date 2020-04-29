@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
+import Import from "../views/Import.vue";
 //import About from "../views/About.vue";
 import Stats from "../views/Stats.vue";
 import Clicker from "../views/Clicker.vue";
@@ -23,6 +24,11 @@ const routes: Array<RouteConfig> = [
     name: "Stats",
     component: Stats
   },
+  {
+    path: "/import",
+    name: "Import",
+    component: Import
+  }
   // {
   //   path: "/about",
   //   name: "About",

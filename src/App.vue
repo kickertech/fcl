@@ -41,7 +41,10 @@
               >
             </md-list>
           </md-list-item>
-
+          <md-list-item to="/import">
+            <md-icon>import_export</md-icon>
+            <span class="md-list-item-text">Import</span>
+          </md-list-item>
           <!-- <md-list-item to="/about">
             <md-icon>send</md-icon>
             <span class="md-list-item-text">About</span>
