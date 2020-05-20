@@ -1,0 +1,10 @@
+
+## Use-cases
+
+* [ ] live event (Liga, Tournament) / match details, opponents
+  * [ ] autometrics via camera
+  * [ ] -> expose API for other services (auth?)
+
+* [ ] research (recent games, links to sources)
+
+*
