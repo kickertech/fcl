@@ -89,6 +89,12 @@ export const EVENTS = {
   END: () => new GameEvent(TYPE_END, Date.now())
 };
 
+export type EventFilter = (
+  events: GameEvent[],
+  types: EventType[],
+  prevType: EventTypePredicate
+) => GameEvent[];
+
 export type EventTypePredicate = (e: EventType) => boolean;
 
 export const getTypes = (types: EventType[]) => (e: GameEvent) =>
@@ -146,4 +152,28 @@ export const isRight = () => (e: EventType) => {
   return name.startsWith("TYPE_R");
 };
 
+// removes a sequence if event types from the event list
+export const removeEventSequence = (
+  events: GameEvent[],
+  types: EventType[]
+) => {
+  const out = [...events];
+  const typeMap = events.map(e => e.type);
+  typeMap.forEach((_, i, coll) => {
+    if (i >= coll.length - types.length) {
+      return;
+    }
+    const allMatch = types.every((t, ti) => {
+      return coll[i + ti] == t;
+    });
+    if (allMatch) {
+      out.splice(i, types.length);
+    }
+  });
+  return out;
+};
 export const not = (fn: EventTypePredicate) => (e: EventType) => !fn(e);
+
+export const oneOf = (...fns: EventTypePredicate[]) => (
+  e: EventType
+): boolean => fns.find(fn => fn(e)) != undefined;

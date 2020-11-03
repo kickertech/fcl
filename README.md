@@ -1,29 +1,19 @@
 # fcl
 
-## Project setup
-```
-npm install
+## developing
+
+```bash
+$ npm run serve
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+## building
+
+```bash
+$ make build
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## deploy
 
-### Run your unit tests
+```bash
+$ make deploy
 ```
-npm run test:unit
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

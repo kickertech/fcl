@@ -11,15 +11,18 @@ import GameEvent, {
   TYPE_L_TIMEOUT,
   TYPE_R_TIMEOUT,
   includes,
+  removeEventSequence,
   isLeft,
   isRight,
+  EventFilter,
   EventType,
   EventTypePredicate,
   lookup,
   getEventName
 } from "./GameEvents";
 
-export type BarStatistics = {
+// TeamStatistics contain metrics for a team
+export type TeamStatistics = {
   defense: {
     retry: number;
     loss: number;
@@ -44,43 +47,47 @@ export type BarStatistics = {
   };
 };
 
+// GameStatistics contains metrics for a game (essentially a single set, not multiple)
 export type GameStatistics = {
   left: {
     goals: number;
     atGoal: number;
-    bars: BarStatistics;
+    bars: TeamStatistics;
   };
   right: {
     goals: number;
     atGoal: number;
-    bars: BarStatistics;
+    bars: TeamStatistics;
   };
 };
 
+// rateFn takes a list of events and returns the percentage
+// of events that match the predicate function
 export const rateFn = (
   events: GameEvent[],
-  from: EventType,
+  from: EventType[],
+  filterFn: EventFilter,
   pred: EventTypePredicate
 ): number => {
-  const successful = hasNext(events, [from], pred).length;
-  const notSuccessful = hasNext(events, [from], not(pred)).length;
+  const successful = filterFn(events, from, pred).length;
+  const notSuccessful = filterFn(events, from, not(pred)).length;
   if (successful + notSuccessful == 0) {
     return 0;
   }
   return (successful / (successful + notSuccessful)) * 100;
 };
 
-export const getBarStatistics = (
+export const getTeamStatistics = (
   team: string,
   events: GameEvent[]
-): BarStatistics => {
-  const lookupEvent = lookup(team);
+): TeamStatistics => {
+  const lookupTeamEvent = lookup(team);
   const enemyTeam = team == "L" ? isRight() : isLeft();
-  const defense = lookupEvent("DEFENSE");
-  const offense = lookupEvent("OFFENSE");
-  const mid = lookupEvent("MID");
-  const goal = lookupEvent("GOAL");
-  const atGoal = lookupEvent("AT_GOAL");
+  const defense = lookupTeamEvent("DEFENSE");
+  const offense = lookupTeamEvent("OFFENSE");
+  const mid = lookupTeamEvent("MID");
+  const goal = lookupTeamEvent("GOAL");
+  const atGoal = lookupTeamEvent("AT_GOAL");
   const stats = {
     defense: {
       retry: hasPrev(events, [defense], includes([defense])).length,
@@ -95,27 +102,33 @@ export const getBarStatistics = (
       goal: hasPrev(events, [goal], includes([mid])).length,
       atGoal: hasPrev(events, [atGoal], includes([mid])).length,
       pass: hasPrev(events, [offense], includes([mid])).length,
-      passRate: rateFn(events, mid, includes([offense]))
+      passRate: rateFn(
+        removeEventSequence(events, [mid, goal]),
+        [mid],
+        hasNext,
+        includes([offense])
+      )
     },
     offense: {
       retry: hasPrev(events, [offense], includes([offense])).length,
       loss: hasNext(events, [offense], enemyTeam).length,
-      lossRate: rateFn(events, offense, enemyTeam),
+      lossRate: rateFn(events, [offense], hasNext, enemyTeam),
       goal: hasPrev(events, [goal], includes([offense])).length,
       atGoal: hasPrev(events, [atGoal], includes([offense])).length,
-      goalRate: rateFn(events, offense, includes([goal]))
+      goalRate: rateFn(events, [offense], hasNext, includes([goal]))
     }
   };
 
   return stats;
 };
 
+//
 export const getStatistics = (events: GameEvent[]): GameStatistics => {
   const nonTimeoutEvents = events.filter(
     notTypes([TYPE_L_TIMEOUT, TYPE_R_TIMEOUT])
   );
-  const leftBar = getBarStatistics("L", nonTimeoutEvents);
-  const rightBar = getBarStatistics("R", nonTimeoutEvents);
+  const leftBar = getTeamStatistics("L", nonTimeoutEvents);
+  const rightBar = getTeamStatistics("R", nonTimeoutEvents);
 
   return {
     left: {
