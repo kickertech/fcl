@@ -7,12 +7,13 @@ clean:
 
 .PHONY: build
 build:
+	npm run build
+
+.PHONY: build-docker
+build-docker:
 	docker build -t ${IMAGE}:${TAG} .
 
 .PHONY: deploy
 deploy: build
-	id=$(shell docker create --name fcl ${IMAGE}:${TAG})
-	docker cp fcl:/app/dist ./dist
-	docker rm -f fcl
 	git rev-parse --short HEAD > dist/version
 	firebase deploy
