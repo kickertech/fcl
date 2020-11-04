@@ -173,7 +173,3 @@ export const removeEventSequence = (
   return out;
 };
 export const not = (fn: EventTypePredicate) => (e: EventType) => !fn(e);
-
-export const oneOf = (...fns: EventTypePredicate[]) => (
-  e: EventType
-): boolean => fns.find(fn => fn(e)) != undefined;

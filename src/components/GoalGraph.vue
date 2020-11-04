@@ -6,7 +6,6 @@
 
 <script>
 import * as d3 from "d3";
-import _ from "lodash";
 
 export default {
   props: {
@@ -14,7 +13,7 @@ export default {
     title: { required: false, type: String, default: "Goals" },
     stats: { required: true, type: Object, default: null },
     start: { required: true, type: Number, default: Date.now() },
-    end: { required: true, type: Number, default: undefined }
+    end: { required: true, type: Number, default: 0 }
   },
 
   data() {
