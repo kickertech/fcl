@@ -38,15 +38,15 @@
             >{{ statistics.total.left.bars.offense.goalRate.toFixed(0) }}% ({{
               statistics.total.left.bars.offense.goal
             }}
-            goals / {{ statistics.total.left.bars.offense.atGoal }} at
-            goal)</md-table-cell
+            goals<!-- @remove:at_goal / {{ statistics.total.left.bars.offense.atGoal }} at
+            goal-->)</md-table-cell
           >
           <md-table-cell
             >{{ statistics.total.right.bars.offense.goalRate.toFixed(0) }}% ({{
               statistics.total.right.bars.offense.goal
             }}
-            goals / {{ statistics.total.right.bars.offense.atGoal }} at
-            goal)</md-table-cell
+            goals<!-- @remove:at_goal / {{ statistics.total.right.bars.offense.atGoal }} at
+            goal-->)</md-table-cell
           >
         </md-table-row>
         <md-table-row>
@@ -140,14 +140,14 @@
               >{{ set.left.bars.offense.goalRate.toFixed(0) }}% ({{
                 set.left.bars.offense.goal
               }}
-              goals / {{ set.left.bars.offense.atGoal }} at goal)</md-table-cell
+              goals<!-- @remove:at_goal / {{ set.left.bars.offense.atGoal }} at goal-->)</md-table-cell
             >
             <md-table-cell
               >{{ set.right.bars.offense.goalRate.toFixed(0) }}% ({{
                 set.right.bars.offense.goal
               }}
-              goals / {{ set.right.bars.offense.atGoal }} at
-              goal)</md-table-cell
+              goals<!-- @remove:at_goal / {{ set.right.bars.offense.atGoal }} at
+              goal-->)</md-table-cell
             >
           </md-table-row>
           <md-table-row>

@@ -65,12 +65,13 @@ export default {
       // Labels of row and columns
       const xDimensions = ["DEFENSE", "MID", "OFFENSE"];
       const yDimensions = [
-        "GOAL",
-        "AT_GOAL",
         "LOSS",
+        "TIMEOUT",
         "MID",
         "OFFENSE",
-        "TIMEOUT"
+        // @remove:at_goal
+        //"AT_GOAL",
+        "GOAL"
       ];
 
       // Build X scales and axis:
@@ -98,11 +99,15 @@ export default {
         .domain([1, 10]);
 
       //
-      g.selectAll()
+      const rectg = g
+        .selectAll()
         .data(this.stats, function(d) {
           return d.group + ":" + d.variable;
         })
         .enter()
+        .append("g");
+
+      rectg
         .append("rect")
         .attr("x", function(d) {
           return x(d.group);
@@ -115,6 +120,19 @@ export default {
         .style("fill", function(d) {
           return color(d.value);
         });
+
+      rectg
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("font-size", "9px")
+        .attr("x", function(d) {
+          return x(d.group) + x.bandwidth() / 2;
+        })
+        .attr("y", function(d) {
+          return y(d.variable) + y.bandwidth() / 2;
+        })
+        .text(d => d.value);
 
       this.heatmapChart
         .append("text")

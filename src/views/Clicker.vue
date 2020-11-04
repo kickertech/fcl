@@ -348,11 +348,18 @@
   }
   &.goal {
     width: 25%;
+    // @remove:at_goal
+    width: 50%;
     @media screen and (max-width: 980px) {
       width: 50%;
+      // @remove:at_goal
+      width: 100%;
     }
   }
+
   &.shot-at-goal {
+    // @remove:at_goal
+    display: none;
     width: 25%;
     @media screen and (max-width: 980px) {
       width: 50%;
@@ -419,7 +426,7 @@ export default {
       disabled: true,
       showSnackbar: false,
       snackbarMsg: "",
-      showEventLog: true,
+      showEventLog: false,
       game: new Game(undefined, "left team", "right team"),
       GAME_EVENTS: GameEvent.EVENTS,
       GameEvent: GameEvent
