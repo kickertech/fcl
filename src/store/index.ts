@@ -12,13 +12,9 @@ const store = new Vuex.Store({
     clear(state) {
       state.games = [];
     },
-    initialize(state) {
-      const data = localStorage.getItem("store");
-      if (data) {
-        const stateData = JSON.parse(data);
-        stateData.games = stateData.games.map((obj: any) => Game.fromJSON(obj));
-        this.replaceState(Object.assign(state, stateData));
-      }
+    initialize(state, payload) {
+      state.games = payload.games;
+      this.replaceState(state);
     },
 
     deleteGame(state, game: Game) {

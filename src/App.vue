@@ -14,10 +14,10 @@
         </md-toolbar>
 
         <md-list>
-          <!-- <md-list-item to="/" @click="showNavigation = false">
-            <md-icon>move_to_inbox</md-icon>
+          <md-list-item to="/" @click="showNavigation = false">
+            <md-icon>home</md-icon>
             <span class="md-list-item-text">Home</span>
-          </md-list-item> -->
+          </md-list-item>
 
           <md-list-item to="/clicker" @click="showNavigation = false">
             <md-icon>track_changes</md-icon>
@@ -26,7 +26,7 @@
 
           <md-list-item md-expand>
             <md-icon>timeline</md-icon>
-            <span class="md-list-item-text">Recent Games</span>
+            <span class="md-list-item-text">My Games</span>
 
             <md-list slot="md-expand">
               <md-list-item
@@ -45,11 +45,15 @@
             <md-icon>import_export</md-icon>
             <span class="md-list-item-text">Import</span>
           </md-list-item>
-          <!-- <md-list-item to="/about">
+          <md-list-item to="/account/login" @click="showNavigation = false">
+            <md-icon>login</md-icon>
+            <span class="md-list-item-text">Account</span>
+          </md-list-item>
+          <md-list-item to="/about" @click="showNavigation = false">
             <md-icon>send</md-icon>
             <span class="md-list-item-text">About</span>
-          </md-list-item> -->
-          <md-list-item @click="deleteStorage()">
+          </md-list-item>
+          <md-list-item v-if="user.user == null" @click="deleteStorage()">
             <md-icon>delete_sweep</md-icon>
             <span class="md-list-item-text">Delete Local Storage</span>
           </md-list-item>
@@ -68,8 +72,50 @@
         >
       </md-snackbar>
     </md-app>
+    <cookie-law theme="base">
+      <div slot="message">
+        Diese Webseite nutzt 🍪. <b>TLDR;</b> Kein tracking. Wir nutzen das für
+        den Login und den Zugriff auf deine Daten. Mehr Details dazu findest du
+        auf der <router-link to="/about">about</router-link> Seite.
+      </div>
+    </cookie-law>
   </div>
 </template>
+
+<script>
+import { mapState } from "vuex";
+import { user } from "@/lib/Firebase";
+import CookieLaw from "vue-cookie-law";
+
+export default {
+  name: "App",
+  components: { CookieLaw },
+
+  data: () => {
+    return {
+      snackbarMessage: "",
+      showSnackbar: false,
+      showNavigation: false,
+      user: user.state
+    };
+  },
+  methods: {
+    deleteStorage() {
+      this.$store.commit("clear");
+      this.snackbarMessage = "cleared local storage. refreshing page...";
+      this.showSnackbar = true;
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  },
+  computed: mapState({
+    games: state => {
+      return state.games;
+    }
+  })
+};
+</script>
 
 <style lang="scss">
 .md-content {
@@ -90,31 +136,3 @@
   max-width: calc(100vw - 125px);
 }
 </style>
-
-<script>
-import { mapState } from "vuex";
-
-export default {
-  name: "App",
-  data: () => {
-    return {
-      snackbarMessage: "",
-      showSnackbar: false,
-      showNavigation: false
-    };
-  },
-  methods: {
-    deleteStorage() {
-      this.$store.commit("clear");
-      this.snackbarMessage = "cleared local storage. refreshing page...";
-      this.showSnackbar = true;
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    }
-  },
-  computed: mapState({
-    games: state => state.games
-  })
-};
-</script>
