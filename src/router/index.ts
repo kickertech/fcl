@@ -44,7 +44,8 @@ const routes: Array<RouteConfig> = [
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  // disable history mode to support electron apps
+  // mode: "history",
   routes
 });
 

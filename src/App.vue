@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <md-app md-mode="fixed">
-      <md-app-toolbar>
+      <md-app-toolbar class="md-primary">
         <md-button class="md-icon-button" @click="showNavigation = true">
           <md-icon>menu</md-icon>
         </md-button>
