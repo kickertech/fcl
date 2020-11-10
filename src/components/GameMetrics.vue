@@ -216,6 +216,7 @@
       text-align: center;
     }
     .statistics-wrapper {
+      overflow-x: scroll;
       display: flex;
     }
   }
